@@ -9,7 +9,7 @@ router.get('/all', (req, res) => {
 });
 
 router.get('/get/:id', (req, res) => {
-	req.models.item.find({}, { autoFetch: true }, (err, item) => {
+	req.models.item.find({ id: req.params.id }, { autoFetch: true }, (err, item) => {
 		if (err) throw err;
 		res.json(item);
 	});
