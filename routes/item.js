@@ -1,7 +1,14 @@
 var express = require('express');
 var router = express.Router();
 
-router.get('/:id', (req, res) => {
+router.get('/all', (req, res) => {
+	req.models.item.find({}, { autoFetch: true }, (err, items) => {
+		if (err) throw err;
+		res.json(items);
+	});
+});
+
+router.get('/get/:id', (req, res) => {
 	req.models.item.find({}, { autoFetch: true }, (err, item) => {
 		if (err) throw err;
 		res.json(item);
@@ -63,13 +70,6 @@ router.get('/resync', (req, res) => {
             });
         });
     }
-});
-
-router.get('/', (req, res) => {
-	req.models.item.find({}, { autoFetch: true }, (err, items) => {
-		if (err) throw err;
-		res.json(items);
-	});
 });
 
 module.exports = router;
