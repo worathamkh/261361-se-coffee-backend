@@ -22,7 +22,8 @@ router.post('/new', (req, res) => {
 		nameTh: req.body.nameTh,
 		desc: req.body.desc,
 		price: req.body.price,
-		size: req.body.size
+		size: req.body.size,
+		count: req.body.count
 	}, (err, item) => {
 		if (err) throw err;
 		res.json({ success: true });
