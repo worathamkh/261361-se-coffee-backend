@@ -245,16 +245,16 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 
         console.log('Done defining models');
 
-        // console.log('Start dropping tables');
-        // db.drop(() => {
-        //     console.log('Done dropping tables');
+				console.log('Start dropping tables');
+				db.drop(() => {
+						console.log('Done dropping tables');
             console.log('Start syncing all models');
             db.sync(() => {
                 console.log('Done syncing all models');
 
                 next();
             });
-        // });
+				});
 	}
 }));
 
