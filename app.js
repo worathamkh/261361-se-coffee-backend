@@ -42,195 +42,204 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 	define: function (db, models, next) {
-        Login = db.define('login', {
-            email: { type: 'text' },
-            password: { type: 'text' },
-            name: { type: 'text' }
-        });
-        Admin = Login.extendsTo('admin', {});
-        Host = Login.extendsTo('host', {}, {
-            methods: {
-                isFreeBetween: function (start, end, callback) {
-                    var freeStartTime = moment(start);
-                    var freeEndTime = moment(end);
-                    this.getHostings((err, hostings) => {
-                        if (err) {
-                            callback(err);
-                        } else if (hostings.length === 0) {
-                            callback(null, true);
-                        } else {
-                            async.every(hostings, (hosting, cb) => {
-                                hosting.getConvention((err, convention) => {
-                                    if (err) {
-                                        cb(err);
-                                    } else {
-                                        var conventionStartTime = moment(convention.startTime);
-                                        var conventionEndTime = moment(convention.endTime);
-                                        var free = freeEndTime.isBefore(conventionStartTime) 
-                                            || conventionEndTime.isBefore(freeStartTime);
-                                        cb(null, free);
-                                    }
-                                });
-                            }, (err, free) => {
-                                if (err) {
-                                    callback(err);
-                                } else {
-                                    callback(null, free);
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        }, {
-            reverse: 'login',
-            required: true
-        });
-        Attendee = Login.extendsTo('attendee', {}, {
-            methods: {
-                isFreeBetween: function (start, end, callback) {
-                    var freeStartTime = moment(start);
-                    var freeEndTime = moment(end);
-                    this.getAttendances((err, attendances) => {
-                        if (err) {
-                            callback(err);
-                        } else if (attendances.length === 0) {
-                            callback(null, true);
-                        } else {
-                            async.every(attendances, (attendance, cb) => {
-                                attendance.getConvention((err, convention) => {
-                                    if (err) {
-                                        cb(err);
-                                    } else {
-                                        var conventionStartTime = moment(convention.startTime);
-                                        var conventionEndTime = moment(convention.endTime);
-                                        var free = freeEndTime.isBefore(conventionStartTime) 
-                                            || conventionEndTime.isBefore(freeStartTime);
-                                        cb(null, free);
-                                    }
-                                });
-                            }, (err, free) => {
-                                if (err) {
-                                    callback(err);
-                                } else {
-                                    callback(null, free);
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        });
-        Hosting = db.define('hosting', {});
-        Attendance = db.define('attendance', {});
-        Reservation = db.define('reservation', {});
-        CreditCard = db.define('credit_card', {
-            name: { type: 'text' },
-            number: { type: 'text' },
-            expr_date: { type: 'date', time: false },
-            cvv: { type: 'text' }
-        });
-        Convention = db.define('convention', {
-            title: { type: 'text' },
-            description: { type: 'text' },
-            startTime: { type: 'date', time: true },
-            endTime: { type: 'date', time: true },
-            invitationOnly: { type: 'boolean' }
-        });
-        RoomType = db.define('room_type', {
-            name: { type: 'text' },
-            description: { type: 'text' }
-        });
-        Room = db.define('room', {
-            name: { type: 'text' },
-        });
-        Zone = db.define('zone', {
-            price: { type: 'integer' }
-        }, {
-            // methods: {
-            //     totalSeats: function (callback) {
-            //         this.getSeats((err, seats) => {
-            //             callback(err, seats.length);
-            //         });
-            //     }
-            // }
-        });
-        Seat = db.define('seat', {
-            row: { type: 'integer' },
-            col: { type: 'integer' }
-        }, {
-            methods: {
-                fullName: function () {
-                    return String.fromCharCode(64 + this.row) + this.col;
-                },
-                isFreeBetween: function (start, end, callback) {
-                    var checkStartTime = moment(start);
-                    var checkEndTime = moment(end);
-                    // console.log('getHostings');
-                    this.getAttendances((err, attendances) => {
-                        if (err) {
-                            callback(err);
-                        } else if (attendances.length === 0) {
-                            callback(null, true);
-                        } else {
-                            async.every(attendances, (attendance, cb) => {
-                                attendance.getConvention((err, convention) => {
-                                    if (err) {
-                                        cb(err);
-                                    } else {
-                                        var conventionStartTime = moment(convention.startTime);
-                                        var conventionEndTime = moment(convention.endTime);
-                                        var free = checkEndTime.isBefore(conventionStartTime) 
-                                            || conventionEndTime.isBefore(checkStartTime);
-                                        cb(null, free);
-                                    }
-                                });
-                            }, (err, free) => {
-                                if (err) {
-                                    callback(err);
-                                } else {
-                                    callback(null, free);
-                                }
-                            });
-                        }
-                    });
-                }
-            }
-        });
+		Item = db.define('item', {
+			nameEn: { type: 'text' },
+			nameTh: { type: 'text' },
+			desc: { type: 'text' },
+			price: { type: 'integer' },
+			size: { type: 'text' }
+		});
 
-        CreditCard.hasOne('owner', Login, { reverse: 'credit_cards' });
-
-        Convention.hasOne('room', Room, { reverse: 'conventions' });
-
-        Room.hasOne('type', RoomType, { reverse: 'rooms' });
-        Zone.hasOne('room', Room, { reverse: 'zones' });
-        Seat.hasOne('zone', Zone, { reverse: 'seats' });
-
-        Hosting.hasOne('host', Host, { reverse: 'hostings' });
-        Hosting.hasOne('convention', Convention, { reverse: 'hostings' });
-
-        Attendance.hasOne('attendee', Attendee, { reverse: 'attendances' });
-        Attendance.hasOne('convention', Convention, { reverse: 'attendances' });
-        Attendance.hasOne('seat', Seat, { reverse: 'attendances' });
-
-        // this creates a new relation convention_reservedAttendances
-        // Convention.hasMany('reservedAttendances', Attendee, {}, { reverse: 'reservations' });
-        Reservation.hasOne('convention', Convention, { reverse: 'reservations' });
-        Reservation.hasOne('attendee', Attendee, { reverse: 'reservations' });
-
-        models.login = Login;
-        models.admin = Admin;
-        models.host = Host;
-        models.attendee = Attendee;
-        models.creditCard = CreditCard;
-        models.convention = Convention;
-        models.room = Room;
-        models.roomType = RoomType;
-        models.zone = Zone;
-        models.seat = Seat;
-        models.hosting = Hosting;
-        models.attendance = Attendance;
-        models.reservation = Reservation;
+		models.item = Item;
+        // Login = db.define('login', {
+        //     email: { type: 'text' },
+        //     password: { type: 'text' },
+        //     name: { type: 'text' }
+        // });
+        // Admin = Login.extendsTo('admin', {});
+        // Host = Login.extendsTo('host', {}, {
+        //     methods: {
+        //         isFreeBetween: function (start, end, callback) {
+        //             var freeStartTime = moment(start);
+        //             var freeEndTime = moment(end);
+        //             this.getHostings((err, hostings) => {
+        //                 if (err) {
+        //                     callback(err);
+        //                 } else if (hostings.length === 0) {
+        //                     callback(null, true);
+        //                 } else {
+        //                     async.every(hostings, (hosting, cb) => {
+        //                         hosting.getConvention((err, convention) => {
+        //                             if (err) {
+        //                                 cb(err);
+        //                             } else {
+        //                                 var conventionStartTime = moment(convention.startTime);
+        //                                 var conventionEndTime = moment(convention.endTime);
+        //                                 var free = freeEndTime.isBefore(conventionStartTime)
+        //                                     || conventionEndTime.isBefore(freeStartTime);
+        //                                 cb(null, free);
+        //                             }
+        //                         });
+        //                     }, (err, free) => {
+        //                         if (err) {
+        //                             callback(err);
+        //                         } else {
+        //                             callback(null, free);
+        //                         }
+        //                     });
+        //                 }
+        //             });
+        //         }
+        //     }
+        // }, {
+        //     reverse: 'login',
+        //     required: true
+        // });
+        // Attendee = Login.extendsTo('attendee', {}, {
+        //     methods: {
+        //         isFreeBetween: function (start, end, callback) {
+        //             var freeStartTime = moment(start);
+        //             var freeEndTime = moment(end);
+        //             this.getAttendances((err, attendances) => {
+        //                 if (err) {
+        //                     callback(err);
+        //                 } else if (attendances.length === 0) {
+        //                     callback(null, true);
+        //                 } else {
+        //                     async.every(attendances, (attendance, cb) => {
+        //                         attendance.getConvention((err, convention) => {
+        //                             if (err) {
+        //                                 cb(err);
+        //                             } else {
+        //                                 var conventionStartTime = moment(convention.startTime);
+        //                                 var conventionEndTime = moment(convention.endTime);
+        //                                 var free = freeEndTime.isBefore(conventionStartTime)
+        //                                     || conventionEndTime.isBefore(freeStartTime);
+        //                                 cb(null, free);
+        //                             }
+        //                         });
+        //                     }, (err, free) => {
+        //                         if (err) {
+        //                             callback(err);
+        //                         } else {
+        //                             callback(null, free);
+        //                         }
+        //                     });
+        //                 }
+        //             });
+        //         }
+        //     }
+        // });
+        // Hosting = db.define('hosting', {});
+        // Attendance = db.define('attendance', {});
+        // Reservation = db.define('reservation', {});
+        // CreditCard = db.define('credit_card', {
+        //     name: { type: 'text' },
+        //     number: { type: 'text' },
+        //     expr_date: { type: 'date', time: false },
+        //     cvv: { type: 'text' }
+        // });
+        // Convention = db.define('convention', {
+        //     title: { type: 'text' },
+        //     description: { type: 'text' },
+        //     startTime: { type: 'date', time: true },
+        //     endTime: { type: 'date', time: true },
+        //     invitationOnly: { type: 'boolean' }
+        // });
+        // RoomType = db.define('room_type', {
+        //     name: { type: 'text' },
+        //     description: { type: 'text' }
+        // });
+        // Room = db.define('room', {
+        //     name: { type: 'text' },
+        // });
+        // Zone = db.define('zone', {
+        //     price: { type: 'integer' }
+        // }, {
+        //     // methods: {
+        //     //     totalSeats: function (callback) {
+        //     //         this.getSeats((err, seats) => {
+        //     //             callback(err, seats.length);
+        //     //         });
+        //     //     }
+        //     // }
+        // });
+        // Seat = db.define('seat', {
+        //     row: { type: 'integer' },
+        //     col: { type: 'integer' }
+        // }, {
+        //     methods: {
+        //         fullName: function () {
+        //             return String.fromCharCode(64 + this.row) + this.col;
+        //         },
+        //         isFreeBetween: function (start, end, callback) {
+        //             var checkStartTime = moment(start);
+        //             var checkEndTime = moment(end);
+        //             // console.log('getHostings');
+        //             this.getAttendances((err, attendances) => {
+        //                 if (err) {
+        //                     callback(err);
+        //                 } else if (attendances.length === 0) {
+        //                     callback(null, true);
+        //                 } else {
+        //                     async.every(attendances, (attendance, cb) => {
+        //                         attendance.getConvention((err, convention) => {
+        //                             if (err) {
+        //                                 cb(err);
+        //                             } else {
+        //                                 var conventionStartTime = moment(convention.startTime);
+        //                                 var conventionEndTime = moment(convention.endTime);
+        //                                 var free = checkEndTime.isBefore(conventionStartTime)
+        //                                     || conventionEndTime.isBefore(checkStartTime);
+        //                                 cb(null, free);
+        //                             }
+        //                         });
+        //                     }, (err, free) => {
+        //                         if (err) {
+        //                             callback(err);
+        //                         } else {
+        //                             callback(null, free);
+        //                         }
+        //                     });
+        //                 }
+        //             });
+        //         }
+        //     }
+        // });
+        //
+        // CreditCard.hasOne('owner', Login, { reverse: 'credit_cards' });
+        //
+        // Convention.hasOne('room', Room, { reverse: 'conventions' });
+        //
+        // Room.hasOne('type', RoomType, { reverse: 'rooms' });
+        // Zone.hasOne('room', Room, { reverse: 'zones' });
+        // Seat.hasOne('zone', Zone, { reverse: 'seats' });
+        //
+        // Hosting.hasOne('host', Host, { reverse: 'hostings' });
+        // Hosting.hasOne('convention', Convention, { reverse: 'hostings' });
+        //
+        // Attendance.hasOne('attendee', Attendee, { reverse: 'attendances' });
+        // Attendance.hasOne('convention', Convention, { reverse: 'attendances' });
+        // Attendance.hasOne('seat', Seat, { reverse: 'attendances' });
+        //
+        // // this creates a new relation convention_reservedAttendances
+        // // Convention.hasMany('reservedAttendances', Attendee, {}, { reverse: 'reservations' });
+        // Reservation.hasOne('convention', Convention, { reverse: 'reservations' });
+        // Reservation.hasOne('attendee', Attendee, { reverse: 'reservations' });
+        //
+        // models.login = Login;
+        // models.admin = Admin;
+        // models.host = Host;
+        // models.attendee = Attendee;
+        // models.creditCard = CreditCard;
+        // models.convention = Convention;
+        // models.room = Room;
+        // models.roomType = RoomType;
+        // models.zone = Zone;
+        // models.seat = Seat;
+        // models.hosting = Hosting;
+        // models.attendance = Attendance;
+        // models.reservation = Reservation;
 
         console.log('Done defining models');
 
