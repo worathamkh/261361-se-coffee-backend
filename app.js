@@ -43,11 +43,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 	define: function (db, models, next) {
 		Item = db.define('item', {
+			image: { type: 'text' },
 			nameEn: { type: 'text' },
 			nameTh: { type: 'text' },
 			desc: { type: 'text' },
 			price: { type: 'integer' },
-			size: { type: 'text' }
+			size: { type: 'text' },
+			count: { type: 'integer' }
 		});
 
 		models.item = Item;
