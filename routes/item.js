@@ -1,7 +1,5 @@
 var express = require('express');
 var router = express.Router();
-var randomName = require('adjective-adjective-animal');
-var changeCase = require('change-case');
 
 router.get('/', (req, res) => {
 	req.models.item.find({}, { autoFetch: true }, (err, items) => {
@@ -19,6 +17,7 @@ router.get('/:id', (req, res) => {
 
 router.post('/new', (req, res) => {
 	req.models.item.create({
+		image: req.body.image,
 		nameEn: req.body.nameEn,
 		nameTh: req.body.nameTh,
 		desc: req.body.desc,
