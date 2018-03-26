@@ -257,16 +257,17 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 }));
 
 app.use('/', index);
+app.use('/api/item', require('./routes/item'));
 // app.use('/users', users);
-app.use('/api/login', require('./routes/login'));
-app.use('/api/host', require('./routes/host'));
-app.use('/api/attendee', require('./routes/attendee'));
-app.use('/api/attendance', require('./routes/attendance'));
-app.use('/api/roomtype', require('./routes/roomType'));
-app.use('/api/room', require('./routes/room'));
-app.use('/api/zone', require('./routes/zone'));
-app.use('/api/seat', require('./routes/seat'));
-app.use('/api/convention', require('./routes/convention'));
+// app.use('/api/login', require('./routes/login'));
+// app.use('/api/host', require('./routes/host'));
+// app.use('/api/attendee', require('./routes/attendee'));
+// app.use('/api/attendance', require('./routes/attendance'));
+// app.use('/api/roomtype', require('./routes/roomType'));
+// app.use('/api/room', require('./routes/room'));
+// app.use('/api/zone', require('./routes/zone'));
+// app.use('/api/seat', require('./routes/seat'));
+// app.use('/api/convention', require('./routes/convention'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
