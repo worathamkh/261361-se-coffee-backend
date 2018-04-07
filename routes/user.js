@@ -1,7 +1,12 @@
 var express = require('express');
 var router = express.Router();
-var _ = require('underscore');
 
+router.get('/all', (req, res) => {
+  req.models.user.find({}, { autoFetch: true }, (err, users) => {
+    if (err) throw err;
+    res.json(users);
+  });
+});
 router.post('/register', (req, res) => {
   req.models.user.create({
     email: req.body.email,
@@ -14,12 +19,16 @@ router.post('/register', (req, res) => {
 });
 
 router.post('/login', (req, res) => {
-  req.models.user.findOne({ email: req.body.email, pass: req.body.pass }, { autoFetch: true }, (err, user) => {
+  req.models.user.find({ email: req.body.email, pass: req.body.pass }, { autoFetch: true }, (err, users) => {
     if (err) throw err;
-    res.json({
-      email: user.email,
-      role: user.role
-    });
+    if (Array.isArray(users) && users[0]) {
+      res.json({
+        email: users[0].email,
+        role: users[0].role
+      }).status(200);
+    } else {
+      res.json({ success: false }).status(401);
+    }
   });
 });
 

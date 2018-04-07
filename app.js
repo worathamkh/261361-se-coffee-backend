@@ -12,7 +12,6 @@ var async = require('async');
 var moment = require('moment');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
 
@@ -77,6 +76,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 
 app.use('/', index);
 app.use('/api/item', require('./routes/item'));
+app.use('/api/user', require('./routes/user'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
