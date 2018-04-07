@@ -53,7 +53,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 		});
 
     User = db.define('user', {
-      email: { type: 'text' },
+      email: { type: 'text', key: true },
       pass: { type: 'text' },
       role: { type: 'text' }
     });
