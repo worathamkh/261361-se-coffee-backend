@@ -23,6 +23,7 @@
     "pug": "2.0.0-beta11",
     "random-js": "^1.0.8",
     "random-paragraph": "^1.0.4",
-    "serve-favicon": "~2.4.5"
+    "serve-favicon": "~2.4.5",
+    "underscore": "^1.8.3"
   }
 }
