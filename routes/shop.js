@@ -3,28 +3,28 @@ var router = express.Router();
 var _ = require('underscore');
 
 router.get('/all', (req, res) => {
-	req.models.item.find({}, { autoFetch: true }, (err, items) => {
+	req.models.shop.find({}, { autoFetch: true }, (err, shops) => {
 		if (err) throw err;
-		res.json(items);
+		res.json(shops);
 	});
 });
 
 router.get('/get/:id', (req, res) => {
-	req.models.item.find({ id: req.params.id }, { autoFetch: true }, (err, item) => {
+	req.models.shop.find({ id: req.params.id }, { autoFetch: true }, (err, shop) => {
 		if (err) throw err;
-		res.json(item);
+		res.json(shop);
 	});
 });
 
 router.get('/top/:n', (req, res) => {
-	req.models.item.find({}, { autoFetch: true }, (err, items) => {
+	req.models.shop.find({}, { autoFetch: true }, (err, shops) => {
 		if (err) throw err;
-		res.json(_.shuffle(items).slice(0, req.params.n));
+		res.json(_.shuffle(shops).slice(0, req.params.n));
 	});
 });
 
 router.post('/create', (req, res) => {
-	req.models.item.create({
+	req.models.shop.create({
 		image: req.body.image,
 		nameEn: req.body.nameEn,
 		nameTh: req.body.nameTh,
@@ -32,7 +32,7 @@ router.post('/create', (req, res) => {
 		price: req.body.price,
 		size: req.body.size,
 		count: req.body.count
-	}, (err, item) => {
+	}, (err, shop) => {
 		if (err) throw err;
 		res.json({ success: true });
 	});
@@ -59,7 +59,7 @@ router.get('/clear', (req, res) => {
   if (req.query.magicword !== '123') {
     res.json({ success: false });
   } else {
-    req.models.item.find({}).remove((err) => {
+    req.models.shop.find({}).remove((err) => {
       if (err) throw err;
       res.json({ success: true });
     });
@@ -70,9 +70,9 @@ router.get('/resync', (req, res) => {
   if (req.query.magicword !== '123') {
     res.json({ success: false });
   } else {
-    req.models.item.drop((err) => {
+    req.models.shop.drop((err) => {
       if (err) throw err;
-      req.models.item.sync((err) => {
+      req.models.shop.sync((err) => {
         if (err) throw err;
         res.json({ success: true });
       });

@@ -46,11 +46,17 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 			nameEn: { type: 'text' },
 			nameTh: { type: 'text' },
 			desc: { type: 'text' },
-      // cat: { type: 'text' },
+      cat: { type: 'text' },
 			price: { type: 'integer' },
 			size: { type: 'text' },
 			count: { type: 'integer' }
 		});
+
+    Shop = db.define('shop', {
+      title: { type: 'text' },
+      logo: { type: 'text' },
+      banner: { type: 'text' },
+    });
 
     User = db.define('user', {
       email: { type: 'text', key: true },
@@ -58,7 +64,10 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
       role: { type: 'text' }
     });
 
+    Item.hasOne('shop', Shop, { reverse: 'items' });
+
 		models.item = Item;
+    models.shop = Shop;
     models.user = User;
 
     console.log('Done defining models');
@@ -76,6 +85,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 
 app.use('/', index);
 app.use('/api/item', require('./routes/item'));
+app.use('/api/shop', require('./routes/shop'));
 app.use('/api/user', require('./routes/user'));
 
 // catch 404 and forward to error handler
