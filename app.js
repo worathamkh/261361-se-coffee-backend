@@ -56,6 +56,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
       name: { type: 'text' },
       logo: { type: 'text' },
       banner: { type: 'text' },
+      approved: { type: 'boolean', defaultValue: false }
     });
 
     User = db.define('user', {
