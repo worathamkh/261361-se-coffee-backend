@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var _ = require('underscore');
-var utils = require('utils');
+var util = require('util');
 
 router.get('/all', (req, res) => {
 	req.models.shop.find({}, { autoFetch: true }, (err, shops) => {
@@ -38,7 +38,7 @@ router.post('/create', (req, res) => {
 router.post('/approve/:id', (req, res) => {
 	req.models.shop.find({ id: req.params.id }, (err, shop) => {
 		if (err) throw err;
-		console.log(utils.inspect(shop));
+		console.log(util.inspect(shop));
 		shop.save({ approved: true }, (err) => {
 			if (err) throw err;
 			res.json({ success: true });
