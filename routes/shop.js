@@ -36,10 +36,10 @@ router.post('/create', (req, res) => {
 });
 
 router.post('/approve/:id', (req, res) => {
-	req.models.shop.find({ id: req.params.id }, (err, shop) => {
+	req.models.shop.get(req.params.id, (err, shop) => {
 		if (err) throw err;
-		console.log(util.inspect(shop));
-		shop.save({ approved: true }, (err) => {
+		shop.approved = true;
+		shop.save((err) => {
 			if (err) throw err;
 			res.json({ success: true });
 		});
@@ -47,7 +47,7 @@ router.post('/approve/:id', (req, res) => {
 });
 
 router.post('/disapprove/:id', (req, res) => {
-	req.models.shop.find({ id: req.params.id }, (err, shop) => {
+	req.models.shop.get(req.params.id, (err, shop) => {
 		if (err) throw err;
 		shop.approved = false;
 		shop.save((err) => {
