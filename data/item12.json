@@ -6,5 +6,6 @@
 	"count":"100",
 	"price":"180",
 	"size":"250g",
-	"cat":"coffee bean"
+	"cat":"coffee bean",
+	"shop_id":"1"
 }
