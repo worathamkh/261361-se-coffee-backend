@@ -29,6 +29,7 @@ router.post('/create', (req, res) => {
 		nameEn: req.body.nameEn,
 		nameTh: req.body.nameTh,
 		desc: req.body.desc,
+		cat: req.body.cat,
 		price: req.body.price,
 		size: req.body.size,
 		count: req.body.count

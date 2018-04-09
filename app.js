@@ -53,7 +53,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 		});
 
     Shop = db.define('shop', {
-      title: { type: 'text' },
+      name: { type: 'text' },
       logo: { type: 'text' },
       banner: { type: 'text' },
     });
