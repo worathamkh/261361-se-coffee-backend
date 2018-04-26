@@ -72,7 +72,7 @@ router.post('/create', (req, res) => {
 		shop_id: req.body.shop_id
 	}, (err, item) => {
 		if (err) throw err;
-		res.json(item);
+		res.json({ success: true });
 	});
 });
 
