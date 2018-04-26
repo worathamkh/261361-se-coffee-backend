@@ -44,7 +44,7 @@ router.post('/status/:order/:item/:status', (req, res) => {
     if (err) throw err;
     order.getItem((err, items) => {
       var target = _.findIndex(items, i => i.id == req.params.item);
-      items[target].status = req.params.status;
+      items[target].extra.status = req.params.status;
       items[target].save((err) => {
         if (err) throw err;
         res.json({ success: true });
