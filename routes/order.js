@@ -47,7 +47,7 @@ router.post('/status/:order/:item/:status', (req, res) => {
     order.item[target].extra.status = req.params.status;
     order.save((err) => {
       if (err) throw err;
-      res.json({ success: true });
+      res.json({ success: true, params: req.params, predicateResult: req.params.item === 1 });
     });
   });
 });
