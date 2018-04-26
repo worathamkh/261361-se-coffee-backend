@@ -43,6 +43,7 @@ router.post('/status/:order/:item/:status', (req, res) => {
   req.models.order.get(req.params.order, (err, order) => {
     if (err) throw err;
     order.getItem((err, items) => {
+      if (err) throw err;
       var target = _.findIndex(items, i => i.id == req.params.item);
       items[target].extra.status = req.params.status;
       items[target].save((err) => {
@@ -51,6 +52,15 @@ router.post('/status/:order/:item/:status', (req, res) => {
       });
     });
   });
+});
+
+router.get('/status/:order/:item', (req, res) => {
+  req.models.order.get(req.params.order, (err, order) => {
+    if (err) throw err;
+    order.getItem((err, items) => {
+      if (err) throw err;
+      res.json({ status: _.find(items, i => i.id == req.params.item).extra.status });
+    });
 });
 
 router.get('/clear', (req, res) => {
