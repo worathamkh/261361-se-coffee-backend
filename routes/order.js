@@ -61,6 +61,7 @@ router.get('/status/:order/:item', (req, res) => {
       if (err) throw err;
       res.json({ status: _.find(items, i => i.id == req.params.item).extra.status });
     });
+  });
 });
 
 router.get('/clear', (req, res) => {
