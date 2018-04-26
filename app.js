@@ -10,6 +10,7 @@ var sassMiddleware = require('node-sass-middleware');
 var orm = require('orm');
 var async = require('async');
 var moment = require('moment');
+var _ = require('underscore');
 
 var index = require('./routes/index');
 
@@ -65,11 +66,15 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
       role: { type: 'text' }
     });
 
+    Order = db.define('order', { }, { });
+
     Item.hasOne('shop', Shop, { reverse: 'items' });
+    Order.hasMany('item', Item, { n: { type: 'integer' }, status: { type: 'text' } }, { reverse: 'orders', key: true });
 
 		models.item = Item;
     models.shop = Shop;
     models.user = User;
+    models.order = Order;
 
     console.log('Done defining models');
     // console.log('Start dropping tables');
@@ -88,6 +93,7 @@ app.use('/', index);
 app.use('/api/item', require('./routes/item'));
 app.use('/api/shop', require('./routes/shop'));
 app.use('/api/user', require('./routes/user'));
+app.use('/api/order', require('./routes/order'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -2,18 +2,61 @@ var express = require('express');
 var router = express.Router();
 var _ = require('underscore');
 var util = require('util');
+var async = require('async');
 
 router.get('/all', (req, res) => {
-	req.models.shop.find({}, { autoFetch: true }, (err, shops) => {
+	req.models.shop.find({}, {}, (err, shops) => {
 		if (err) throw err;
-		res.json(shops);
+		req.models.item.find({}, {}, (err, items) => {
+			if (err) throw err;
+			async.map(items, (item, cb) => {
+				item.getOrders((err, orders) => {
+					if (err) cb(err);
+					else {
+						item.orders = orders;
+						item.soldCount = _.reduce(orders, (N, o) => N + o.n, 0);
+						item.soldMoney = item.price * item.soldCount;
+						cb(null, item);
+					}
+				});
+			}, (err, results) => {
+				if (err) throw err;
+				itemsByShop = _.groupBy(results, i => i.shop_id);
+				res.json(_.map(shops, (shop) => {
+					shop.items = itemsByShop[shop.id.toString()] || [];
+					shop.totalIncome = _.reduce(itemsByShop, (X, I) => X + _.reduce(I, (x, i) => x + i.soldMoney, 0), 0);
+					return shop;
+				}));
+			});
+		});
 	});
 });
 
 router.get('/get/:id', (req, res) => {
-	req.models.shop.find({ id: req.params.id }, { autoFetch: true }, (err, shop) => {
+	req.models.shop.find({ id: req.params.id }, {}, (err, shops) => {
 		if (err) throw err;
-		res.json(shop);
+		req.models.item.find({}, {}, (err, items) => {
+			if (err) throw err;
+			async.map(items, (item, cb) => {
+				item.getOrders((err, orders) => {
+					if (err) cb(err);
+					else {
+						item.orders = orders;
+						item.soldCount = _.reduce(orders, (N, o) => N + o.n, 0);
+						item.soldMoney = item.price * item.soldCount;
+						cb(null, item);
+					}
+				});
+			}, (err, results) => {
+				if (err) throw err;
+				itemsByShop = _.groupBy(results, i => i.shop_id);
+				res.json(_.map(shops, (shop) => {
+					shop.items = itemsByShop[shop.id.toString()] || [];
+					shop.totalIncome = _.reduce(itemsByShop, (X, I) => X + _.reduce(I, (x, i) => x + i.soldMoney, 0), 0);
+					return shop;
+				}));
+			});
+		});
 	});
 });
 
