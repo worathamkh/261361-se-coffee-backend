@@ -16,17 +16,17 @@ router.get('/', function(req, res, next) {
 // });
 
 router.get('/api/resync', (req, res) => {
-    if (req.query.magicword !== '123') {
-        res.json({ success: false });
-    } else {
-        req.db.drop((err) => {
-            if (err) throw err;
-            req.db.sync((err) => {
-                if (err) throw err;
-                res.json({ success: true });
-            });
-        });
-    }
+  if (req.query.magicword !== '123') {
+    res.json({ success: false });
+  } else {
+    req.db.drop((err) => {
+      if (err) throw err;
+      req.db.sync((err) => {
+        if (err) throw err;
+        res.json({ success: true });
+      });
+    });
+  }
 });
 
 module.exports = router;
