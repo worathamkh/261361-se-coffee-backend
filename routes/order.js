@@ -25,9 +25,12 @@ router.post('/create', (req, res) => {
     // map {item, n, status} to functions
     // use async.parallel
     async.parallel(req.body.items.map(i => ((cb) => {
-      order.addItem(i.item, { n: i.n, status: i.status }, (err) => {
+      req.models.item.get(i.item, (err, item) => {
         if (err) cb(err);
-        else cb(null, 1);
+        else order.addItem(item, { n: i.n, status: i.status }, (err) => {
+          if (err) cb(err);
+          else cb(null, 1);
+        });
       });
     })), (err, results) => {
       if (err) throw err;
