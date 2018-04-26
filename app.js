@@ -74,6 +74,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
 		models.item = Item;
     models.shop = Shop;
     models.user = User;
+    models.order = Order;
 
     console.log('Done defining models');
     // console.log('Start dropping tables');
