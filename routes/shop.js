@@ -79,7 +79,7 @@ router.post('/create', (req, res) => {
 		banner: req.body.banner
 	}, (err, shop) => {
 		if (err) throw err;
-		res.json({ success: true });
+		res.json(shop);
 	});
 });
 
