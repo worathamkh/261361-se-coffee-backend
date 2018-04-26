@@ -40,7 +40,7 @@ router.post('/create', (req, res) => {
 });
 
 router.post('/status/:order/:item/:status', (req, res) => {
-  req.models.order.get(req.params.order, (err, order) => {
+  req.models.order.get(req.params.order, { autoFetch: true }, (err, order) => {
     if (err) throw err;
     res.json(order);
     return;
