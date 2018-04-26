@@ -14,6 +14,7 @@ router.get('/all', (req, res) => {
 					if (err) cb(err);
 					else {
 						item.orders = orders;
+						item.deliveredCount = _.reduce(orders, (D, o) => D + (o.status == 'delivered' ? o.n : 0), 0);
 						item.soldCount = _.reduce(orders, (N, o) => N + o.n, 0);
 						item.soldMoney = item.price * item.soldCount;
 						cb(null, item);
@@ -24,7 +25,11 @@ router.get('/all', (req, res) => {
 				itemsByShop = _.groupBy(results, i => i.shop_id);
 				res.json(_.map(shops, (shop) => {
 					shop.items = itemsByShop[shop.id.toString()] || [];
-					shop.totalIncome = _.reduce(itemsByShop, (X, I) => X + _.reduce(I, (x, i) => x + i.soldMoney, 0), 0);
+					// shop.totalIncome = _.reduce(itemsByShop, (X, I) => X + _.reduce(I, (x, i) => x + i.soldMoney, 0), 0);
+					shop.totalIncome = _.reduce(shop.items, (x, i) => x + i.soldMoney, 0);
+					shop.totalOrdered = _.reduce(shop.items, (n, i) => n + i.soldCount, 0);
+					shop.totalDelivered = _.reduce(shop.items, (d, i) => d + i.deliveredCount, 0);
+					shop.percentageDelivered = shop.totalOrdered > 0 ? shop.totalDelivered / shop.totalOrdered * 100 : 0;
 					return shop;
 				}));
 			});
