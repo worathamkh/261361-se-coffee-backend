@@ -17,12 +17,19 @@ router.get('/get/:id', (req, res) => {
 	});
 });
 
-router.get('/findByCat/:cat', (req, res) => {
-	req.models.item.find({ cat: orm.like(req.params.cat) }, { autoFetch: true }, (err, item) => {
+router.get('/findByCat/:cat/:shop', (req, res) => {
+	req.models.item.find({ cat: orm.like(req.params.cat), shop_id: req.params.shop }, { autoFetch: true }, (err, item) => {
 		if (err) throw err;
 		res.json(item);
 	});
 });
+
+// router.get('/findByCat/:cat', (req, res) => {
+//   req.models.item.find({ cat: orm.like(req.params.cat) }, { autoFetch: true }, (err, item) => {
+//     if (err) throw err;
+//     res.json(item);
+//   });
+// });
 
 router.get('/top/:n', (req, res) => {
 	req.models.item.find({}, { autoFetch: true }, (err, items) => {
