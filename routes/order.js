@@ -6,7 +6,32 @@ var async = require('async');
 router.get('/all', (req, res) => {
 	req.models.order.find({}, { autoFetch: true }, (err, orders) => {
 		if (err) throw err;
-		res.json(orders);
+		res.json(orders.map((order) => {
+			var totalPrice = 0;
+			var o = {};
+			o.id = order.id;
+			order.item = order.item.map((i) => {
+				var j = {
+					image: i.image,
+					nameEn: i.nameEn,
+					nameTh: i.nameTh,
+					desc: i.desc,
+					cat: i.cat,
+					pricePerUnit: i.price,
+					priceTimesN: i.price * i.extra.n,
+					count: i.count,
+					id: i.id,
+					shop_id: i.shop_id,
+					n: i.n,
+					status: i.status
+				};
+				totalPrice += j.priceTimesN;
+				return j;
+			});
+			o.itemsByShop = _.groupBy(order.item, i => i.shop_id);
+			o.totalPrice = totalPrice;
+			return o;
+		}));
 	});
 });
 
