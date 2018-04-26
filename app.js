@@ -65,7 +65,11 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
       role: { type: 'text' }
     });
 
+    Order = db.define('order', {
+    });
+
     Item.hasOne('shop', Shop, { reverse: 'items' });
+    Order.hasMany('item', Item, { n: { type: 'integer' }, status: { type: 'text' } }, { reverse: 'orders', key: true });
 
 		models.item = Item;
     models.shop = Shop;
