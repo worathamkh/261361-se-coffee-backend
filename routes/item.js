@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var _ = require('underscore');
+var orm = require('orm');
 
 router.get('/all', (req, res) => {
 	req.models.item.find({}, { autoFetch: true }, (err, items) => {
@@ -18,6 +19,20 @@ router.get('/get/:id', (req, res) => {
 
 router.get('/top/:n', (req, res) => {
 	req.models.item.find({}, { autoFetch: true }, (err, items) => {
+		if (err) throw err;
+		res.json(_.shuffle(items).slice(0, req.params.n));
+	});
+});
+
+router.get('/topCoffee/:n', (req, res) => {
+	req.models.item.find({ cat: orm.like('coffee bean') }, { autoFetch: true }, (err, items) => {
+		if (err) throw err;
+		res.json(_.shuffle(items).slice(0, req.params.n));
+	});
+});
+
+router.get('/topOthers/:n', (req, res) => {
+	req.models.item.find({ cat: orm.not_like('coffee bean') }, { autoFetch: true }, (err, items) => {
 		if (err) throw err;
 		res.json(_.shuffle(items).slice(0, req.params.n));
 	});
