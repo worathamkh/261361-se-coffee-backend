@@ -42,6 +42,8 @@ router.post('/create', (req, res) => {
 router.post('/status/:order/:item/:status', (req, res) => {
   req.models.order.get(req.params.order, (err, order) => {
     if (err) throw err;
+    res.json(order);
+    return;
     var target = _.findIndex(order.item, i => i.id == req.params.item);
     order.item[target].status = req.params.status;
     order.item[target].extra.status = req.params.status;
