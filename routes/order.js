@@ -40,8 +40,17 @@ router.post('/create', (req, res) => {
 });
 
 router.post('/status/:order/:item/:status', (req, res) => {
-  req.models.order.get(req.params.order, { autoFetch: true }, (err, order) => {
+  req.models.order.get(req.params.order, (err, order) => {
     if (err) throw err;
+    order.getItems((err, items) => {
+      var target = _.findIndex(items, i => i.id == req.params.item);
+      items[target].status = req.params.status;
+      items[target].save((err) => {
+        if (err) throw err;
+        res.json({ success: true });
+      });
+    });
+    return;
     var target = _.findIndex(order.item, i => i.id == req.params.item);
     order.item[target].status = req.params.status;
     order.item[target].extra.status = req.params.status;
