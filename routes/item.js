@@ -18,7 +18,7 @@ router.get('/get/:id', (req, res) => {
 });
 
 router.get('/findByCat/:cat/:shop', (req, res) => {
-	req.models.item.find({ cat: orm.like(req.params.cat), shop_id: req.params.shop }, { autoFetch: true }, (err, item) => {
+	req.models.item.find({ cat: orm.like('%' + req.params.cat + '%'), shop_id: req.params.shop }, { autoFetch: true }, (err, item) => {
 		if (err) throw err;
 		res.json(item);
 	});
@@ -39,14 +39,14 @@ router.get('/top/:n', (req, res) => {
 });
 
 router.get('/topCoffee/:n', (req, res) => {
-	req.models.item.find({ cat: orm.like('coffee bean') }, { autoFetch: true }, (err, items) => {
+	req.models.item.find({ cat: orm.like('coffee bean%') }, { autoFetch: true }, (err, items) => {
 		if (err) throw err;
 		res.json(_.shuffle(items).slice(0, req.params.n));
 	});
 });
 
 router.get('/topOthers/:n', (req, res) => {
-	req.models.item.find({ cat: orm.not_like('coffee bean') }, { autoFetch: true }, (err, items) => {
+	req.models.item.find({ cat: orm.not_like('coffee bean%') }, { autoFetch: true }, (err, items) => {
 		if (err) throw err;
 		res.json(_.shuffle(items).slice(0, req.params.n));
 	});
