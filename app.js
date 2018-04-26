@@ -10,6 +10,7 @@ var sassMiddleware = require('node-sass-middleware');
 var orm = require('orm');
 var async = require('async');
 var moment = require('moment');
+var _ = require('underscore');
 
 var index = require('./routes/index');
 
@@ -65,8 +66,7 @@ app.use(orm.express(process.env.JAWSDB_MARIA_URL, {
       role: { type: 'text' }
     });
 
-    Order = db.define('order', {
-    });
+    Order = db.define('order', { }, { });
 
     Item.hasOne('shop', Shop, { reverse: 'items' });
     Order.hasMany('item', Item, { n: { type: 'integer' }, status: { type: 'text' } }, { reverse: 'orders', key: true });
