@@ -92,6 +92,7 @@ app.use('/', index);
 app.use('/api/item', require('./routes/item'));
 app.use('/api/shop', require('./routes/shop'));
 app.use('/api/user', require('./routes/user'));
+app.use('/api/order', require('./routes/order'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
